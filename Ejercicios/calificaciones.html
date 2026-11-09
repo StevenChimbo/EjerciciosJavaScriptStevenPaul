@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ejercicio 3: Analizador de calificaciones</title>
 
-    <!-- PARTE 1: ESTILOS (CSS) - Mantenidos del archivo base -->
+    
     <style>
-        /* ===== DISEÑO BASE ===== */
+        
         
         body {
             font-family: Arial, sans-serif;
@@ -83,28 +83,13 @@
             font-size: 0.8rem;
             color: #64748b;
         }
-        /* ===== ESTILOS ADICIONALES PARA ESTE EJERCICIO ===== */
         
-        .lista-resultados {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .lista-resultados li {
-            margin-bottom: 8px;
-            padding: 10px;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 0.95rem;
-        }
     </style>
 </head>
 
 <body>
 
-    <!-- PARTE 2: ESTRUCTURA (HTML) -->
+    <!-- ESTRUCTURA HTML -->
     <div class="tarjeta">
         <h1>Analizador de calificaciones</h1>
 
@@ -119,20 +104,20 @@
         <p class="nota">Considera aprobadas las calificaciones mayores o iguales a 7.00 sobre 10.</p>
     </div>
 
-    <!-- PARTE 3: LÓGICA (JavaScript) -->
+    <!-- LÓGICA JavaScript -->
     <script>
         // Arreglo inicial de calificaciones
         const calificaciones = [8, 6, 9, 7, 5, 10, 4, 7];
 
         // Pruebas adicionales sugeridas por el ejercicio (descomenta para probar):
-        // const calificaciones = [7, 8, 9, 10, 7, 8, 9, 10]; // Todas aprobadas (Promedio: 8.50, Máx: 10, Mín: 7, 8 Apr, 0 No Apr)
-        // const calificaciones = [4, 5, 6, 3, 2, 6, 5, 4];   // Ninguna aprobada (Promedio: 4.38, Máx: 6, Mín: 2, 0 Apr, 8 No Apr)
-        // const calificaciones = [8, 6, 12, 7, -2, 10];      // Prueba del reto opcional (Notas fuera de rango)
+        // const calificaciones = [7, 8, 9, 10, 7, 8, 9, 10]; 
+        // const calificaciones = [4, 5, 6, 3, 2, 6, 5, 4];  
+        // const calificaciones = [8, 6, 12, 7, -2, 10];
 
         function analizarCalificaciones() {
             const contenedorResultado = document.getElementById("resultado");
 
-            // ===== RETO OPCIONAL: Validación de notas fuera del rango [0 - 10] =====
+            // RETO OPCIONAL:
             let hayError = false;
             let notasInvalidas = [];
 
@@ -149,10 +134,10 @@
                     "<strong>✘ Error:</strong> Se detectaron calificaciones fuera del rango válido (0 a 10): " +
                     notasInvalidas.join(", ") + ". Corrige los datos antes de continuar.";
                 contenedorResultado.hidden = false;
-                return; // Detener la ejecución si hay notas inválidas
+                return; // 
             }
 
-            // ===== ANÁLISIS DE DATOS SIN reduce(), Math.max() ni Math.min() =====
+            // ANÁLISIS DE DATOS SIN reduce(), Math.max() ni Math.min()
             let suma = 0;
             let notaMaxima = calificaciones[0];
             let notaMinima = calificaciones[0];
@@ -162,20 +147,20 @@
             for (let i = 0; i < calificaciones.length; i++) {
                 const notaActual = calificaciones[i];
 
-                // Acumulador para la suma total
+                
                 suma += notaActual;
 
-                // Comparación para la nota más alta
+               
                 if (notaActual > notaMaxima) {
                     notaMaxima = notaActual;
                 }
 
-                // Comparación para la nota más baja
+                
                 if (notaActual < notaMinima) {
                     notaMinima = notaActual;
                 }
 
-                // Contadores de aprobados y no aprobados (nota >= 7)
+               
                 if (notaActual >= 7) {
                     aprobadas++;
                 } else {
@@ -186,7 +171,7 @@
             // Cálculo del promedio
             const promedio = suma / calificaciones.length;
 
-            // ===== MOSTRAR RESULTADOS =====
+            // MOSTRAR RESULTADOS
             contenedorResultado.className = "ok";
             contenedorResultado.innerHTML = `
         <ul class="lista-resultados">
@@ -202,7 +187,7 @@
             contenedorResultado.hidden = false;
         }
 
-        // Evento al presionar el botón "Analizar"
+        // Evento al presionar el botón Analizar
         document.getElementById("btn-analizar").addEventListener("click", analizarCalificaciones);
     </script>
 </body>
