@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificador de reglas de contraseña</title>
+
+    <!-- PARTE 1: ESTILOS (CSS) -->
+    <style>
+        /* ===== DISEÑO BASE (igual en todos los ejercicios) ===== */
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 24px;
+        }
+        
+        .tarjeta {
+            max-width: 460px;
+            margin: 0 auto;
+            padding: 24px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        h1 {
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+        
+        label {
+            display: block;
+            margin-top: 14px;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            box-sizing: border-box;
+            width: 100%;
+            margin-top: 6px;
+            padding: 10px;
+            font-size: 1rem;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        
+        button {
+            width: 100%;
+            margin-top: 18px;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #2563eb;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        
+        #resultado {
+            margin-top: 18px;
+        }
+        
+        .ok,
+        .error,
+        .aviso {
+            padding: 12px;
+            border-radius: 6px;
+        }
+        
+        .ok {
+            color: #166534;
+            background-color: #dcfce7;
+            border: 1px solid #4ade80;
+        }
+        
+        .error {
+            color: #991b1b;
+            background-color: #fee2e2;
+            border: 1px solid #f87171;
+        }
+        
+        .aviso {
+            color: #92400e;
+            background-color: #fffbeb;
+            border-left: 5px solid #fbbf24;
+            font-size: 0.9rem;
+        }
+        
+        .nota {
+            margin-top: 16px;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        /* ===== ESTILOS DE ESTE EJERCICIO ===== */
+        
+        .mostrar {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+        
+        #reglas {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #reglas li {
+            margin-bottom: 8px;
+        }
+        
+        #mensaje {
+            margin-top: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- PARTE 2: ESTRUCTURA (HTML) -->
+    <div class="tarjeta">
+        <h1>Verificador de reglas de contraseña</h1>
+
+        <p class="aviso">Usa solo contraseñas de ejemplo. No escribas contraseñas personales reales.</p>
+
+        <form id="formulario">
+            <label for="contrasena">Contraseña de ejemplo</label>
+            <input type="password" id="contrasena" autocomplete="off">
+
+            <label class="mostrar">
+        <input type="checkbox" id="mostrar"> Mostrar lo que escribo
+      </label>
+
+            <button type="submit">Verificar</button>
+        </form>
+
+        <div id="resultado" hidden>
+            <ul id="reglas">
+                <li id="regla-longitud"></li>
+                <li id="regla-digito"></li>
+                <li id="regla-espacios"></li>
+            </ul>
+            <div id="mensaje"></div>
+        </div>
+
+        <p class="nota">Cumplir estas reglas es solo una comprobación del ejercicio, no una garantía de seguridad.</p>
+    </div>
+
+    <!-- PARTE 3: LÓGICA (JavaScript) -->
+    <script>
+        // Pinta una regla como cumplida o no cumplida
+        function pintarRegla(id, cumple, texto) {
+            const elemento = document.getElementById(id);
+            if (cumple) {
+                elemento.className = "ok";
+                elemento.textContent = "✔ Cumple: " + texto;
+            } else {
+                elemento.className = "error";
+                elemento.textContent = "✘ No cumple: " + texto;
+            }
+        }
+
+        function verificar() {
+            // No se usa trim(): los espacios cuentan, porque una regla los revisa
+            const contrasena = document.getElementById("contrasena").value;
+
+            // Recorrer la contraseña carácter por carácter
+            let tieneDigito = false;
+            let tieneEspacio = false;
+
+            for (let i = 0; i < contrasena.length; i++) {
+                const caracter = contrasena[i];
+
+                if (caracter >= "0" && caracter <= "9") {
+                    tieneDigito = true;
+                }
+                if (caracter === " ") {
+                    tieneEspacio = true;
+                }
+            }
+
+            // Evaluar las tres reglas
+            const reglaLongitud = contrasena.length >= 8;
+            const reglaDigito = tieneDigito;
+            const reglaSinEspacios = !tieneEspacio;
+
+            // Mostrar cada regla por separado
+            pintarRegla("regla-longitud", reglaLongitud,
+                "al menos 8 caracteres (tiene " + contrasena.length + ")");
+            pintarRegla("regla-digito", reglaDigito,
+                "al menos un dígito del 0 al 9");
+            pintarRegla("regla-espacios", reglaSinEspacios,
+                "libre de espacios");
+
+            // El mensaje final solo aparece si se cumplen las tres
+            const mensaje = document.getElementById("mensaje");
+            if (reglaLongitud && reglaDigito && reglaSinEspacios) {
+                mensaje.className = "ok";
+                mensaje.textContent = "Cumple todas las reglas";
+            } else {
+                mensaje.className = "aviso";
+                mensaje.textContent = "Revisa las reglas que faltan";
+            }
+
+            document.getElementById("resultado").hidden = false;
+        }
+
+        // Eventos
+        document.getElementById("formulario").addEventListener("submit", function(evento) {
+            evento.preventDefault();
+            verificar();
+        });
+
+        document.getElementById("mostrar").addEventListener("change", function() {
+            const campo = document.getElementById("contrasena");
+            campo.type = this.checked ? "text" : "password";
+        });
+    </script>
+</body>
+
+</html>

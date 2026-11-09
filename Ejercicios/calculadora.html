@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de compra</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 24px;
+        }
+        
+        .tarjeta {
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 24px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        h1 {
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+        
+        label {
+            display: block;
+            margin-top: 14px;
+            font-weight: bold;
+        }
+        
+        input {
+            box-sizing: border-box;
+            width: 100%;
+            margin-top: 6px;
+            padding: 10px;
+            font-size: 1rem;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        
+        button {
+            width: 100%;
+            margin-top: 18px;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #2563eb;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        
+        #resultado {
+            margin-top: 18px;
+            padding: 14px;
+            border-radius: 6px;
+        }
+        
+        .error {
+            color: #991b1b;
+            background-color: #fee2e2;
+            border: 1px solid #f87171;
+        }
+        
+        .ok {
+            color: #166534;
+            background-color: #dcfce7;
+            border: 1px solid #4ade80;
+        }
+        
+        .ok p {
+            margin: 4px 0;
+        }
+        
+        .total {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tarjeta">
+        <h1>Calculadora de compra</h1>
+
+        <form id="formulario">
+            <label for="precio">Precio unitario ($)</label>
+            <input type="text" id="precio" inputmode="decimal" placeholder="Ej.: 12,50">
+
+            <label for="cantidad">Cantidad de unidades</label>
+            <input type="text" id="cantidad" inputmode="numeric" placeholder="Ej.: 3">
+
+            <button type="submit">Calcular total</button>
+        </form>
+
+        <div id="resultado" hidden></div>
+    </div>
+
+    <script>
+        // Convierte un número a texto con dos decimales y coma: 37.5 -> "$37,50"
+        function dinero(valor) {
+            return "$" + valor.toFixed(2).replace(".", ",");
+        }
+
+        function mostrarError(mensaje) {
+            const resultado = document.getElementById("resultado");
+            resultado.className = "error";
+            resultado.innerHTML = "<strong>Error:</strong> " + mensaje;
+            resultado.hidden = false;
+        }
+
+        function calcularTotal() {
+            // 1. Obtener los valores (se acepta coma o punto en el precio)
+            const textoPrecio = document.getElementById("precio").value.trim().replace(",", ".");
+            const textoCantidad = document.getElementById("cantidad").value.trim();
+
+            // 2. Validar
+            if (textoPrecio === "" || textoCantidad === "") {
+                mostrarError("completa el precio y la cantidad.");
+                return;
+            }
+
+            if (!/^\d*\.?\d+$/.test(textoPrecio) || Number(textoPrecio) <= 0) {
+                mostrarError("el precio debe ser un número mayor que cero.");
+                return;
+            }
+
+            if (!/^\d+$/.test(textoCantidad) || Number(textoCantidad) <= 0) {
+                mostrarError("la cantidad debe ser un número entero positivo.");
+                return;
+            }
+
+            // 3. Calcular
+            const precio = Number(textoPrecio);
+            const cantidad = Number(textoCantidad);
+            const subtotal = precio * cantidad;
+
+            let descuento = 0;
+            if (subtotal >= 100) {
+                descuento = subtotal * 0.10;
+            }
+
+            const total = subtotal - descuento;
+
+            // 4. Mostrar el resultado en la página
+            const resultado = document.getElementById("resultado");
+            resultado.className = "ok";
+            resultado.innerHTML =
+                "<p>Subtotal: " + dinero(subtotal) + "</p>" +
+                "<p>Descuento (10 %): " + dinero(descuento) + "</p>" +
+                "<p class='total'>Total: " + dinero(total) + "</p>";
+            resultado.hidden = false;
+        }
+
+        // Evento: al enviar el formulario (clic en el botón o tecla Enter)
+        document.getElementById("formulario").addEventListener("submit", function(evento) {
+            evento.preventDefault();
+            calcularTotal();
+        });
+    </script>
+</body>
+
+</html>

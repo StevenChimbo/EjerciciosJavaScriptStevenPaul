@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicio 4: Lista interactiva de tareas</title>
+
+  <!-- PARTE 1: ESTILOS (CSS) -->
+  <style>
+    /* ===== DISEÑO BASE ===== */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      margin: 0;
+      padding: 24px;
+    }
+    .tarjeta {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 24px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 1.4rem;
+    }
+    label {
+      display: block;
+      margin-top: 14px;
+      font-weight: bold;
+    }
+    input[type="text"] {
+      box-sizing: border-box;
+      width: 100%;
+      margin-top: 6px;
+      padding: 10px;
+      font-size: 1rem;
+      border: 2px solid #cbd5e1;
+      border-radius: 6px;
+    }
+    input:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+    button {
+      padding: 10px 16px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #ffffff;
+      background-color: #2563eb;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1d4ed8;
+    }
+    .aviso {
+      padding: 12px;
+      border-radius: 6px;
+      color: #92400e;
+      background-color: #fffbeb;
+      border-left: 5px solid #fbbf24;
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+    }
+    .nota {
+      margin-top: 16px;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    /* ===== ESTILOS ESPECÍFICOS DE ESTE EJERCICIO ===== */
+    .form-grupo {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .form-grupo input {
+      margin-top: 0;
+      flex: 1;
+    }
+    #lista-tareas {
+      list-style: none;
+      margin: 20px 0 0 0;
+      padding: 0;
+    }
+    .tarea-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      gap: 10px;
+    }
+    .tarea-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      word-break: break-word;
+    }
+    /* Estilo para tachar el texto al completar la tarea */
+    .tachado {
+      text-decoration: line-through;
+      color: #94a3b8;
+    }
+    .btn-eliminar {
+      background-color: #ef4444;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+    }
+    .btn-eliminar:hover {
+      background-color: #dc2626;
+    }
+    #mensaje-error {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #991b1b;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PARTE 2: ESTRUCTURA (HTML) -->
+  <div class="tarjeta">
+    <h1>Lista interactiva de tareas</h1>
+
+    <p class="aviso">Agrega tus tareas pendientes. Puedes marcarlas como completadas o eliminarlas.</p>
+
+    <form id="form-tarea">
+      <label for="nueva-tarea">Nueva tarea</label>
+      <div class="form-grupo">
+        <input type="text" id="nueva-tarea" placeholder="Escribe una tarea..." autocomplete="off">
+        <button type="submit">Agregar tarea</button>
+      </div>
+      <div id="mensaje-error"></div>
+    </form>
+
+    <ul id="lista-tareas">
+      <!-- Las tareas se agregarán dinámicamente aquí -->
+    </ul>
+
+    <p class="nota">Las tareas se mantienen mientras la página permanezca abierta.</p>
+  </div>
+
+  <!-- PARTE 3: LÓGICA (JavaScript) -->
+  <script>
+    const formulario = document.getElementById("form-tarea");
+    const inputTarea = document.getElementById("nueva-tarea");
+    const listaTareas = document.getElementById("lista-tareas");
+    const mensajeError = document.getElementById("mensaje-error");
+
+    formulario.addEventListener("submit", function (evento) {
+      evento.preventDefault();
+
+      // Obtener el valor y limpiar espacios a los extremos
+      const textoTarea = inputTarea.value.trim();
+      mensajeError.textContent = "";
+
+      // Impedir el registro de tareas vacías o compuestas únicamente por espacios
+      if (textoTarea === "") {
+        mensajeError.textContent = "Error: No se pueden agregar tareas vacías o con espacios en blanco.";
+        inputTarea.value = ""; // Limpia por seguridad
+        return;
+      }
+
+      // Crear elementos de la nueva tarea dinámicamente
+      const li = document.createElement("li");
+      li.className = "tarea-item";
+
+      const contenedorInfo = document.createElement("div");
+      contenedorInfo.className = "tarea-info";
+
+      // Casilla de verificación
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+
+      // Texto de la tarea (usamos un span para poder tacharlo con CSS)
+      const spanTexto = document.createElement("span");
+      spanTexto.textContent = textoTarea;
+
+      // Evento para tachar o desatachar el texto al cambiar el checkbox
+      checkbox.addEventListener("change", function () {
+        if (checkbox.checked) {
+          spanTexto.classList.add("tachado");
+        } else {
+          spanTexto.classList.remove("tachado");
+        }
+      });
+
+      contenedorInfo.appendChild(checkbox);
+      contenedorInfo.appendChild(spanTexto);
+
+      // Botón para eliminar la tarea (Reto opcional)
+      const btnEliminar = document.createElement("button");
+      btnEliminar.type = "button";
+      btnEliminar.textContent = "Eliminar";
+      btnEliminar.className = "btn-eliminar";
+
+      btnEliminar.addEventListener("click", function () {
+        listaTareas.removeChild(li);
+      });
+
+      // Ensamblar la estructura del elemento de lista
+      li.appendChild(contenedorInfo);
+      li.appendChild(btnEliminar);
+
+      // Agregar la nueva tarea a la lista visible, conservando las anteriores
+      listaTareas.appendChild(li);
+
+      // Limpiar el campo de texto después de agregar
+      inputTarea.value = "";
+      inputTarea.focus();
+    });
+  </script>
+</body>
+</html>
